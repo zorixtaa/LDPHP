@@ -4,7 +4,7 @@ class Parser {
     public static function entete_login(){
 		header('Cache-Control: no-store,  must-revalidate, max-age=0');
 		header('Pragma: no-cache');
-		echo '<html><link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>'; 
+		echo '<html>'; 
 		echo '<link rel="shortcut icon" type="image/png" href="favicon.ico"/>';
 		echo '<title>Login Page</title><link rel="stylesheet" href="css/login.css"/> ';
 		echo '<script>function displaytext(){var ele = document.getElementById("username");document.getElementById("nom").value = ele.options[ele.selectedIndex].text;}</script>';		
@@ -14,23 +14,21 @@ class Parser {
     }
     
     public static function body_login(Database $db){
-		echo '<div  class= \' p-0\' style= "background-color: rgba(22, 27, 34,0.8);display: block;margin-left:2%;margin-top:1%;width:45%;">';
-		echo '<form class=\'form-control-sm mx-auto text-center\' style = \'display:block;background-color: rgba(0, 0, 0, 0.3);margin-top:5%;\' method="post" action="login.php">';
-	    echo '<a style = "text-align:center;" href="https://www.linea-diagonal.com/"><img src="img/linea.png" alt="Ocean Call" > </a>';
-	    echo '<h3 class="display-2" style="color: white;margin-top:40px;background-color: rgba(88, 166, 255,0.5);margin-bottom:5%;">';
-	    echo '<br><strong>Bienvenue</strong><br>Plateform E-learning<br><br></h3>';
-		echo "<label style = 'color:white;'>Identifiant de l'agent : </label><select id =\"username\" onchange = \"displaytext()\" name=\"user\" style=\" margin-left:10px;width:20%;margin-bottom:5%;\"><option value=\"select\"><strong>Nom d'utilisateur :</strong></option>";
-		$users = $db ->run_query("Select username from users where type != 0 Order by type");
-	    	foreach($users as $user) { $username = htmlspecialchars($user['username']); echo "<option value=\"$username\">$username</option>";
-			}
-		echo '</select>';
-	    echo '<br><input id ="nom" class=\'form-control  form-control-lg col-4 mx-auto text-center\' style =\'width:20%;margin-bottom:5%;\' type="text" class="box-input" name="username" placeholder="Nom d\'utilisateur">';
-	    echo '<br><input class=\'form-control  form-control-lg col-4 mx-auto text-center\' style =\'width:20%;margin-bottom:5%;\' type="password" class="box-input" name="password" placeholder="Mot de passe">';
+                echo '<div class="login-card">';
+                echo '<form class="login-form" method="post" action="login.php">';
+            echo '<a href="https://www.linea-diagonal.com/"><img src="img/linea.png" alt="Ocean Call"></a>';
+            echo '<h3>Bienvenue<br>Plateform E-learning</h3>';
+                echo "<label>Identifiant de l'agent :</label><select id=\"username\" onchange=\"displaytext()\" name=\"user\"><option value=\"select\">Nom d'utilisateur :</option>";
+                $users = $db->run_query("Select username from users where type != 0 Order by type");
+                foreach($users as $user) { $username = htmlspecialchars($user['username']); echo "<option value=\"$username\">$username</option>"; }
+                echo '</select>';
+            echo '<input id="nom" type="text" name="username" placeholder="Nom d\'utilisateur">';
+            echo '<input type="password" name="password" placeholder="Mot de passe">';
         if (isset($_SESSION['error_message'])) {
 		echo '<p class="errorMessage"><h3 class=\"bg-danger display-7\" style = \'color:red\'><strong>'.$_SESSION['error_message'].'</strong></h3></p>';
 		unset($_SESSION['error_message']);  // Clear the error message after displaying
 		}
-	    echo '<br><input class= "btn btn-primary btn-lg text-white font-weight-bold" style="margin-bottom:5%;" type="submit" value="Valider :"></form>';
+            echo '<input type="submit" value="Valider">';
 		echo '</div>';
     }
     public static function footer_login(){
