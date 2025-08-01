@@ -1,16 +1,22 @@
 <?php
-Class User {
+class User {
+
+  const PEPPER = 'staticPepperChangeMe';
 
   private $username;
   private $password;
   private $type;
   private $etat;
   private $score;
-  
-  public function __construct($username= null,$password = null,$type = null){ 
-    $this ->username = $username; 
+
+  public function __construct($username= null,$password = null,$type = null){
+    $this ->username = $username;
     $this ->password = $password;
     $this ->type = $type;
+  }
+
+  public static function hashPassword(string $password): string {
+    return password_hash($password . self::PEPPER, PASSWORD_ARGON2ID);
   }
 
   public function get_user(){
@@ -18,8 +24,11 @@ Class User {
   }
   
   public function get_type_db(Database $db){
-	 $result = $db ->run_query("Select type from users where username = '".$this->username."'");
-	 return !empty($result) ? $result[0]['type'] : null; 
+         $result = $db->run_query(
+            "Select type from users where username = :username",
+            ['username' => $this->username]
+         );
+         return !empty($result) ? $result[0]['type'] : null;
   }
   
   public function modify_user($username= NULL,$password=NULL,$type=NULL){
@@ -47,12 +56,12 @@ Class User {
   }
   
   public function auth_user(Database $db){
-	  $entry = $db ->run_prep_query(
-		"Select * from users where username = :username and password = :password",
-	    ['username' => $this ->username,'password' => $this ->password]);
-	  // Check if the user is found and redirect in accueil page 	    
-	  if (count($entry) === 1 ) {
-		 session_regenerate_id(true);
+          $entry = $db->run_query(
+                "Select * from users where username = :username",
+            ['username' => $this->username]
+          );
+          if (count($entry) === 1 && password_verify($this->password . self::PEPPER, $entry[0]['password'])) {
+                 session_regenerate_id(true);
         
         // 2. Set ALL session data at once
         $_SESSION = [
@@ -71,8 +80,9 @@ Class User {
             exit();
         } else {
             die("Headers already sent! Check for spaces/echo before auth_user()");
-        }}
-	  else {
+        }
+        }
+          else {
 		$_SESSION['error_message'] = "Le nom d'utilisateur sélectionné ou le mot de passe est incorrect."; 
         header("Location: login.php");
         exit();

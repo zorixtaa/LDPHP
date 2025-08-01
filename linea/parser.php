@@ -2,9 +2,11 @@
 class Parser {
 /////////Parser  Page Login ///////////////////
     public static function entete_login(){
-		header('Cache-Control: no-store,  must-revalidate, max-age=0');
-		header('Pragma: no-cache');
-		echo '<html>'; 
+                header('Cache-Control: no-store,  must-revalidate, max-age=0');
+                header('Pragma: no-cache');
+                header('Content-Security-Policy: default-src \x27self\x27');
+                header('X-Frame-Options: DENY');
+                echo '<html>';
 		echo '<link rel="shortcut icon" type="image/png" href="favicon.ico"/>';
 		echo '<title>Login Page</title><link rel="stylesheet" href="css/login.css"/> ';
 		echo '<script>function displaytext(){var ele = document.getElementById("username");document.getElementById("nom").value = ele.options[ele.selectedIndex].text;}</script>';		
@@ -24,6 +26,7 @@ class Parser {
                 echo '</select>';
             echo '<input id="nom" type="text" name="username" placeholder="Nom d\'utilisateur">';
             echo '<input type="password" name="password" placeholder="Mot de passe">';
+            echo '<input type="hidden" name="csrf_token" value="'.htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8').'">';
         if (isset($_SESSION['error_message'])) {
 		echo '<p class="errorMessage"><h3 class=\"bg-danger display-7\" style = \'color:red\'><strong>'.$_SESSION['error_message'].'</strong></h3></p>';
 		unset($_SESSION['error_message']);  // Clear the error message after displaying
